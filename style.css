@@ -1,0 +1,28 @@
+.weatherICON {
+    width: 100px;
+    height: 100px;
+    display: block;
+}
+
+.topBar{
+    background-color: #030640;
+    padding: 10px;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#search-box {
+width: 65%;
+}
+
+img#globe {
+    position: absolute;
+    width: 7%;
+    top: -6%;
+    left: 104%;
+    transform: translateY(7px);
+    cursor: pointer;
+    /* transform: translateX(10px); */
+}
