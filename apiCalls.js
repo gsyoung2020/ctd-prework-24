@@ -72,11 +72,45 @@ function processHourlyData(hourlyData) {
   }
 }
 
+function getTimezoneForCoordinates(latitude, longitude) {
+  const url = `https://api.wheretheiss.at/v1/coordinates/${latitude},${longitude}`;
+  $.getJSON(url, function (whereisthisat) {
+    console.log(whereisthisat.timezone_id);
+    var timezone = whereisthisat.timezone_id;
+
+    function getSevenDayForecastForTimezone(timezone) {
+      let datesFull = [];
+      let dates = [];
+      let daysOfWeek = [];
+      let daysOfWeekFULL = [];
+      for (let i = 0; i < 7; i++) {
+          // Create a moment object for the current date in the specified timezone
+          let date = moment().tz(timezone).add(i, 'days');
+          // Format the date as you prefer, e.g., M/D (month day) or "dddd M/D(day & month day), ddd (day short), dddd (day full) "
+          dates.push(date.format('M/D'));
+          datesFull.push(date.format('dddd M/D'));
+          daysOfWeek.push(date.format('ddd'));
+          daysOfWeekFULL.push(date.format('dddd'));
+      }
+      return {dates, datesFull, daysOfWeek, daysOfWeekFULL};
+    }
+
+    // Example usage of the inner function
+    var sevenDayForecast = getSevenDayForecastForTimezone(timezone);
+    console.log(sevenDayForecast.dates);
+    console.log(sevenDayForecast.daysOfWeek);
+    console.log(sevenDayForecast.datesFull);
+    $(".today").html(sevenDayForecast.daysOfWeekFULL[0]);
+
+  });
+}
+
+
 function getWeatherData(latitude, longitude, callback) {
   $.getJSON(`/api/weather?latitude=${latitude}&longitude=${longitude}`, function (openMeteo) {
     processHourlyData(openMeteo.hourly.temperature_2m);
     var time = openMeteo.current.time;
-    console.log(`THIS IS TIME: ${time}`);
+    //console.log(`THIS IS TIME: ${time}`);
 
     var splt_time = time.split("");
     
@@ -84,7 +118,7 @@ function getWeatherData(latitude, longitude, callback) {
     
     hours.push(splt_time[11], splt_time[12]);
     
-    console.log(`THIS IS THE HOURS: ${hours}`);
+    //console.log(`THIS IS THE HOURS: ${hours}`);
     
     if (parseInt(splt_time[14]) <= 3) {
       splt_time[14] = "0";
@@ -94,8 +128,8 @@ function getWeatherData(latitude, longitude, callback) {
     
       var hourChg = parseInt(hours.join('')) + 1;
     
-      console.log(`THIS IS THE NEW HOURS: ${hourChg}`);
-      console.log(typeof(hourChg));
+      //console.log(`THIS IS THE NEW HOURS: ${hourChg}`);
+      //console.log(typeof(hourChg));
     
       if (hourChg === 24) {
         splt_time[11] = "0";
@@ -155,11 +189,11 @@ function getWeatherData(latitude, longitude, callback) {
         $("#aprtValue").html(apparentTemp);
         $("#humValue").html(humidity);
         $("#speedEmblm").html("km/h")
-        console.log("Current Temp [hourly]: " + currentTemp);
-        console.log("Apparent Temp: " + apparentTemp);
-        console.log("Weather Code: " + weatherCode);
-        console.log("Precipitation Probability: " + precipitation_probab);
-        console.log("Wind Speed: " + windSpeed);
+        //console.log("Current Temp [hourly]: " + currentTemp);
+        //console.log("Apparent Temp: " + apparentTemp);
+        //console.log("Weather Code: " + weatherCode);
+        //console.log("Precipitation Probability: " + precipitation_probab);
+        //console.log("Wind Speed: " + windSpeed);
       }
     }
     var currentTemp = openMeteo.current.temperature_2m;
@@ -207,15 +241,20 @@ $(document).ready(()=>{
             $("#convrt").addClass("celsius");
             $.getJSON("https://api.ipify.org?format=json",
             function (ipIFY) {
+
  
                 // Displayin IP address on screen
                 //$("#gfg").html(data.ip);
+
+                //Taking the IP address and getting the location of the user
                 $.getJSON("http://ip-api.com/json/"+ipIFY.ip,
                 
                     function (ipAPI) {
                         var latitude = ipAPI.lat;
                         var longitude = ipAPI.lon;
                         $(".location").html(ipAPI.city+", "+ipAPI.regionName+", "+ipAPI.country);
+                        getTimezoneForCoordinates(latitude, longitude)
+                        //Sending the latitude and longitude to the getWeatherData function
                         getWeatherData(latitude, longitude);
                         getWeatherData(latitude, longitude, function() {
                           let firstDayTemperatures = dailyTemperatureData[0];
@@ -284,11 +323,16 @@ $(document).ready(()=>{
             navigator.geolocation.getCurrentPosition(function(position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
+            getTimezoneForCoordinates(latitude, longitude);
             console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
             $.getJSON(`/api/location?lat=${latitude}&lon=${longitude}`,
             function (locationIQ) {
                 console.log(locationIQ)
-                $(".location").html(locationIQ.address.city+", "+locationIQ.address.state+", "+locationIQ.address.country);
+                if(locationIQ.address.city == undefined || locationIQ.address.state == undefined){
+                  $("#locatCITY").hide();
+                  $("#locatSTATE").html(locationIQ.display_place);
+                  $('#locatCOUNTRY').html(locationIQ.address.country);
+                } else {$(".location").html(locationIQ.address.city+", "+locationIQ.address.state+", "+locationIQ.address.country);}
             }
             )
             getWeatherData(latitude, longitude);
@@ -334,8 +378,12 @@ $('#search-box-input').autocomplete({
       //displayLatLon(suggestion.data.display_name, suggestion.data.lat, suggestion.data.lon);
         var latitude = suggestion.data.lat;
         var longitude = suggestion.data.lon;
-        $(".location").html(suggestion.data.address.city+", "+suggestion.data.address.state+", "+suggestion.data.address.country);
+        console.log(suggestion.data);
+        if(suggestion.data.address.city == undefined || suggestion.data.address.state == undefined){
+          $(".location").html(suggestion.data.display_place);}
+        else { $(".location").html(suggestion.data.address.city+", "+suggestion.data.address.state+", "+suggestion.data.address.country);}
         getWeatherData(latitude, longitude);
+        getTimezoneForCoordinates(latitude, longitude);
         $('#search-box-input').val("")
     }
   });
@@ -345,7 +393,9 @@ $('#search-box-input').autocomplete({
     $('#search-box-input').val("");
   });
 
-function highlight(text, focus) {
+  function highlight(text, focus) {
+    // Ensure text is a string to prevent errors
+    if (!text) return ''; // Return an empty string if text is falsy (e.g., undefined, null)
     var r = RegExp('(' + escapeRegExp(focus) + ')', 'gi');
     return text.replace(r, '<strong>$1</strong>');
   }
@@ -356,3 +406,47 @@ function highlight(text, focus) {
 
 });
 
+/*
+ //this is how to get the date of the next 7 days from today, output as "Day Month Date Year"
+
+	var date1 = new Date();
+
+	var date2 = new Date();
+
+	date2.setDate(date2.getDate() + 1);
+
+	var date3 = new Date();
+
+	date3.setDate(date3.getDate() + 2);
+
+	var date4 = new Date();
+
+	date4.setDate(date4.getDate() + 3);
+
+	var date5 = new Date();
+
+	date5.setDate(date5.getDate() + 4);
+
+	var date6 = new Date();
+
+	date6.setDate(date6.getDate() + 5);
+
+	var date7 = new Date();
+
+	date7.setDate(date7.getDate() + 6);
+ 
+	console.log(date1.toDateString());
+
+	console.log(date2.toDateString());
+
+	console.log(date3.toDateString());
+
+	console.log(date4.toDateString());
+
+	console.log(date5.toDateString());
+
+	console.log(date6.toDateString());
+
+	console.log(date7.toDateString());
+
+*/
