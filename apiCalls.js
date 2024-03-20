@@ -51,6 +51,14 @@ function convertToCelsius(fahrenheit) {
     return Math.round((fahrenheit.toString() - 32) * 5/9);
 }
 
+function kmToMiles(km) {
+    return Math.round(km * 0.621371);
+}
+
+function mphToKmh(mph) {
+    return Math.round(mph * 1.60934);
+}
+
 var dailyTemperatureData = [];
 
 function processHourlyData(hourlyData) {
@@ -68,17 +76,43 @@ function getWeatherData(latitude, longitude, callback) {
   $.getJSON(`/api/weather?latitude=${latitude}&longitude=${longitude}`, function (openMeteo) {
     processHourlyData(openMeteo.hourly.temperature_2m);
     var time = openMeteo.current.time;
+    console.log(`THIS IS TIME: ${time}`);
+
     var splt_time = time.split("");
+    
+    var hours = [];
+    
+    hours.push(splt_time[11], splt_time[12]);
+    
+    console.log(`THIS IS THE HOURS: ${hours}`);
+    
     if (parseInt(splt_time[14]) <= 3) {
       splt_time[14] = "0";
       splt_time[15] = "0";
     } else {
-      var hourChg = parseInt(splt_time[12]) + 1;
-      splt_time[12] = hourChg.toString();
+      console.log(hours.join(''));
+    
+      var hourChg = parseInt(hours.join('')) + 1;
+    
+      console.log(`THIS IS THE NEW HOURS: ${hourChg}`);
+      console.log(typeof(hourChg));
+    
+      if (hourChg === 24) {
+        splt_time[11] = "0";
+        splt_time[12] = "0";
+      } else {
+        splt_time[12] = (hourChg % 10).toString();
+        if (hourChg >= 10) {
+          splt_time[11] = "1";
+        }
+      }
+    
       splt_time[14] = "0";
       splt_time[15] = "0";
     }
+    
     var newTime = splt_time.join('');
+    
     console.log(newTime);
     for (let i = 0; i < openMeteo.hourly.time.length; i++) {
       if (openMeteo.hourly.time[i] == newTime) {
@@ -86,7 +120,10 @@ function getWeatherData(latitude, longitude, callback) {
         var currentTemp = openMeteo.hourly.temperature_2m[i];
         var apparentTemp = openMeteo.hourly.apparent_temperature[i];
         var weatherCode = openMeteo.hourly.weather_code[i];
-        
+        var precipitation_probab = openMeteo.hourly.precipitation_probability[i];
+        var windSpeed = openMeteo.hourly.wind_speed_10m[i];
+        var humidity = openMeteo.hourly.relative_humidity_2m[i];
+
         for (const [key, value] of Object.entries(weather_code)) {
           if (key == weatherCode) {
             $(".weatherStatus").html(value);
@@ -113,11 +150,16 @@ function getWeatherData(latitude, longitude, callback) {
           }
         }
       }
-
-
+        $("#windValue").html(windSpeed);
+        $("#precipValue").html(precipitation_probab);
         $("#aprtValue").html(apparentTemp);
+        $("#humValue").html(humidity);
+        $("#speedEmblm").html("km/h")
         console.log("Current Temp [hourly]: " + currentTemp);
         console.log("Apparent Temp: " + apparentTemp);
+        console.log("Weather Code: " + weatherCode);
+        console.log("Precipitation Probability: " + precipitation_probab);
+        console.log("Wind Speed: " + windSpeed);
       }
     }
     var currentTemp = openMeteo.current.temperature_2m;
@@ -126,22 +168,28 @@ function getWeatherData(latitude, longitude, callback) {
     var minTemp = openMeteo.daily.temperature_2m_min;
     var hourlyTemp = openMeteo.hourly.temperature_2m;
     var hourlyApparentTemp = openMeteo.hourly.apparent_temperature;
+
     console.log("Current Temp [current]: " + currentTemp);
     console.log("Max Temp: " + maxTemp[0]);
     console.log("Min Temp: " + minTemp[0]);
     console.log("Hourly Temp: " + hourlyTemp);
     console.log("Hourly Apparent Temp: " + hourlyApparentTemp);
     console.log(openMeteo);
+
     if ($("#convrt").hasClass("fahrenheit")) {
       $("#currntValue").html(convertToFahrenheit(currentTemp));
       $("#maxValue").html(convertToFahrenheit(maxTemp[0]));
       $("#minValue").html(convertToFahrenheit(minTemp[0]));
+      $("#windValue").html(kmToMiles$("#windValue").text());
+      $("#speedEmblm").html("mph");
       $(".tempEmblm").html("&deg;F");
 
     } else{
       $("#currntValue").html(currentTemp);
       $("#maxValue").html(maxTemp[0]);
       $("#minValue").html(minTemp[0]);
+      $("#windValue").html(mphToKmh($("#windValue").text()));
+      $("#speedEmblm").html("km/h");
       $(".tempEmblm").html("&deg;C");
     }
   
@@ -192,12 +240,15 @@ $(document).ready(()=>{
             var maxF = convertToFahrenheit($("#maxValue").text());
             var minF = convertToFahrenheit($("#minValue").text());
             var aprtF = convertToFahrenheit($("#aprtValue").text());
+            var windF = kmToMiles($("#windValue").text());
     
             $("#currntValue").html(currntF);
             $("#maxValue").html(maxF);
             $("#minValue").html(minF);
             $("#aprtValue").html(aprtF);
             $(".tempEmblm").html("&deg;F");
+            $("#windValue").html(windF);
+            $("#speedEmblm").html("mph");
         } else {
             alert("Already in Fahrenheit");
         }
@@ -211,11 +262,14 @@ $(document).ready(()=>{
             var maxC = convertToCelsius($("#maxValue").text());
             var minC = convertToCelsius($("#minValue").text());
             var aprtC = convertToCelsius($("#aprtValue").text());
+            var windC = mphToKmh($("#windValue").text());
     
             $("#currntValue").html(currntC);
             $("#maxValue").html(maxC);
             $("#minValue").html(minC);
             $("#aprtValue").html(aprtC);
+            $("#windValue").html(windC);
+            $("#speedEmblm").html("km/h");
             $(".tempEmblm").html("&deg;C");
         } else {
             alert("Already in Celsius");
@@ -282,6 +336,7 @@ $('#search-box-input').autocomplete({
         var longitude = suggestion.data.lon;
         $(".location").html(suggestion.data.address.city+", "+suggestion.data.address.state+", "+suggestion.data.address.country);
         getWeatherData(latitude, longitude);
+        $('#search-box-input').val("")
     }
   });
 

@@ -4,6 +4,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <head>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
     <script src="apiCalls.js"></script>
@@ -14,15 +18,21 @@
 <html>
 <body onload="startTime()">
     <div class="topBar">
-      <img style="width: 3%; padding-left: 1%;" src="assets/flower.svg" alt="Weather Icon" id="weatherIcon">
-      <p style="color: white"id="timetxt"></p>
+      <img src="assets/flower.svg" alt="Weather Icon" id="topBarLOGO">
       <div id="search-box">
         <div class="locationiq-autocomplete-control locationiq-bounds locationiq-control locationiq-autocomplete-expanded" id="search-box-area">
           <input class="locationiq-autocomplete-input ui-autocomplete-input" id="search-box-input" title="Search" placeholder="Search for an address...">
-          <img src="assets/globe.svg" alt="Weather Icon" title="See Your Current Location" id="globe">
           <a class="locationiq-autocomplete-search-icon"></a>
           <a class="locationiq-reset-control" id="reset-autocomplete" title="Reset">x</a> 
         </div>
+      </div>
+      <img src="assets/globe.svg" alt="Weather Icon" title="See Your Current Location" id="globe">
+      <div class="right-section">
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"><span style="position: absolute; left: 7px; top: 8px" id="far">F</span><span id="cel" style="position: absolute; left: 40px; top: 8px">C</span></span>
+        </label>
+        <p id="timetxt"></p>
       </div>
     </div>
     <h1 class="location"></h1>
@@ -33,6 +43,9 @@
     <p class="aprtTemp"> Apparnt Temp: <span id="aprtValue"></span><span class="tempEmblm"></span></p>
     <p class="maxTemp">Max Temp: <span id="maxValue"></span><span class="tempEmblm"></span></p>
     <p class="minTemp">Min Temp: <span id="minValue"></span><span class="tempEmblm"></span></p>
+    <p class="humidity">Humidity: <span id="humValue"></span>%</p>
+    <p class="windSpeed">Wind Speed: <span id="windValue"></span> <span id="speedEmblm"></span></p>
+    <p class="precipitation">Precipitation Chance: <span id="precipValue"></span>%</p>
     <a href="javascript:void(0);" class="validator">See Your Current Location</a>
     <p id="convrt"><a href="javascript:void(0);" id="celsius">C</a> / <a href="javascript:void(0);" id="fahrenheit">F</a></p>
     <!-- <div class="container">
