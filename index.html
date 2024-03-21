@@ -37,19 +37,33 @@
         <p id="timetxt"></p>
       </div>
     </div>
-    <h1 class="location"><span id="locatCITY"></span><span id="locatSTATE"></span><span id="locatCOUNTRY"></span></h1>
-    <h2 class="today"></h2>
-    <div id="wIcon"></div>
-    <p class="weatherStatus"></p>
-    <p class="currntTemp"> Current Temp: <span id="currntValue"></span><span class="tempEmblm"></span></p>
-    <p class="aprtTemp"> Apparnt Temp: <span id="aprtValue"></span><span class="tempEmblm"></span></p>
-    <p class="maxTemp">Max Temp: <span id="maxValue"></span><span class="tempEmblm"></span></p>
-    <p class="minTemp">Min Temp: <span id="minValue"></span><span class="tempEmblm"></span></p>
-    <p class="humidity">Humidity: <span id="humValue"></span>%</p>
-    <p class="windSpeed">Wind Speed: <span id="windValue"></span> <span id="speedEmblm"></span></p>
-    <p class="precipitation">Precipitation Chance: <span id="precipValue"></span>%</p>
-    <a href="javascript:void(0);" class="validator">See Your Current Location</a>
-    <p id="convrt"><a href="javascript:void(0);" id="celsius">C</a> / <a href="javascript:void(0);" id="fahrenheit">F</a></p>
+    <div class="currntTab">
+      <div class="currntOverlay">
+        <h1 class="location"><span id="locatCITY"></span>, <span id="locatSTATE"></span>, <span id="locatCOUNTRY"></span></h1>
+        <h2 class="today"></h2>
+      </div>
+      <div class="currntContent">
+        <div id="wIcon"></div>
+        <div class="currntTemp">
+          <span id="currntValue"></span><span class="tempEmblm"></span>
+          <span id="convrt">
+            <a href="javascript:void(0);" id="celsius">C</a> / <a href="javascript:void(0);" id="fahrenheit">F</a>
+          </span>
+        </div>
+        <div class="weatherDetails">
+          <p class="precipitation">Precipitation: <span id="precipValue"></span>%</p>
+          <p class="humidity">Humidity: <span id="humValue"></span>%</p>
+          <p class="windSpeed">Wind: <span id="windValue"></span> <span id="speedEmblm"></span></p>
+        </div>
+      </div>
+      <div class="weatherStats">
+        <p class="maxTemp">High: <span id="maxValue"></span><span class="tempEmblm"></span></p>
+        <p class="minTemp">Low: <span id="minValue"></span><span class="tempEmblm"></span></p>
+        <p class="weatherStatus"></p>
+      </div>
+    </div>
+    <!-- <a href="javascript:void(0);" class="validator">See Your Current Location</a> -->
+    <!-- <p class="aprtTemp"> Apparnt Temp: <span id="aprtValue"></span><span class="tempEmblm"></span></p> -->
     <!-- <div class="container">
         <div id="search-box">
           <div class="locationiq-autocomplete-control locationiq-bounds locationiq-control locationiq-autocomplete-expanded" id="search-box-area">
