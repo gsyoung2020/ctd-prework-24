@@ -1,16 +1,4 @@
-/*
-New api url to use from oprn-meteo https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,apparent_temperature,precipitation,weather_code&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto
-it has the following parameters:
-Temperature
-Apparent Temperature
-Precipitation
-Precipitation Probability
-Weather Code
-Relative Humidity
-Wind Speed
-Wind Direction
-*/
-
+// all of the weather code data is fetched from the OpenMeteo API
 let weather_code = {
   0: "Clear sky",
   1: "Mainly clear sky",
@@ -42,6 +30,48 @@ let weather_code = {
   99: "Heavy Hail Thunderstorm"
 }
 
+function updateSlider(unit) {
+  if (unit === "fahrenheit") {
+    $(".switch input[type='checkbox']").prop("checked", true);
+  } else {
+    $(".switch input[type='checkbox']").prop("checked", false);
+  }
+}
+
+// Conversion functions
+function convertToFahrenheitBTN() {
+  $(".minTemp, .maxTemp, .currntTemp, .aprtTemp").each(function() {
+    var tempValue = $(this).find("span:first-child").text();
+    if (!isNaN(tempValue)) {
+      var fahrenheitValue = convertToFahrenheit(tempValue);
+      $(this).find("span:first-child").text(fahrenheitValue.toFixed(1));
+    }
+  });
+  $(".tempEmblm").text("F");
+
+  // Convert seven-day forecast temperatures to Fahrenheit
+  for (let i = 0; i < 7; i++) {
+    $(`#dailyMax${i+1}`).text(convertToFahrenheit($(`#dailyMax${i+1}`).text()));
+    $(`#dailyMin${i+1}`).text(convertToFahrenheit($(`#dailyMin${i+1}`).text()));
+  }
+}
+
+function convertToCelsiusBTN() {
+  $(".minTemp, .maxTemp, .currntTemp, .aprtTemp").each(function() {
+    var tempValue = $(this).find("span:first-child").text();
+    if (!isNaN(tempValue)) {
+      var celsiusValue = convertToCelsius(tempValue);
+      $(this).find("span:first-child").text(celsiusValue.toFixed(1));
+    }
+  });
+  $(".tempEmblm").text("C");
+
+  // Convert seven-day forecast temperatures to Celsius
+  for (let i = 0; i < 7; i++) {
+    $(`#dailyMax${i+1}`).text(convertToCelsius($(`#dailyMax${i+1}`).text()));
+    $(`#dailyMin${i+1}`).text(convertToCelsius($(`#dailyMin${i+1}`).text()));
+  }
+}
 
 function convertToFahrenheit(celsius) {
     return Math.round((celsius.toString() * 9/5) + 32);    
@@ -61,24 +91,27 @@ function mphToKmh(mph) {
 
 var dailyTemperatureData = [];
 
+//Function to convert hourly temperature data into daily temperature data
 function processHourlyData(hourlyData) {
   const HOURS_IN_DAY = 24;
   dailyTemperatureData = []; // Reset or initialize the storage
   
+  // Iterate over the hourlyData array in 24-hour chunks
   for (let i = 0; i < hourlyData.length; i += HOURS_IN_DAY) {
-      // Extract 24-hour chunks and store them
+      // Extract 24-hour chunks and store them in dailyTemperatureData
       let dailyData = hourlyData.slice(i, i + HOURS_IN_DAY);
       dailyTemperatureData.push(dailyData);
   }
 }
 
-
+// Function(s) to get the timezone for the given coordinates, then using the timezone to get the seven-day dates
 function getTimezoneForCoordinates(latitude, longitude) {
   const url = `https://api.wheretheiss.at/v1/coordinates/${latitude},${longitude}`;
   $.getJSON(url, function (whereisthisat) {
     console.log(whereisthisat.timezone_id);
     var timezone = whereisthisat.timezone_id;
 
+    /// Function to get the seven-day dates for the given timezone
     function getSevenDayForecastForTimezone(timezone) {
       let datesFull = [];
       let dates = [];
@@ -88,19 +121,20 @@ function getTimezoneForCoordinates(latitude, longitude) {
           // Create a moment object for the current date in the specified timezone
           let date = moment().tz(timezone).add(i, 'days');
           // Format the date as you prefer, e.g., M/D (month day) or "dddd M/D(day & month day), ddd (day short), dddd (day full) "
-          dates.push(date.format('M/D'));
-          datesFull.push(date.format('dddd M/D'));
-          daysOfWeek.push(date.format('ddd'));
-          daysOfWeekFULL.push(date.format('dddd'));
+          dates.push(date.format('M/D')) // 7/1, 7/2, 7/3, etc.;
+          datesFull.push(date.format('dddd M/D')) // Monday 7/1, Tuesday 7/2, etc.;
+          daysOfWeek.push(date.format('ddd')) // Mon, Tue, Wed, etc.;
+          daysOfWeekFULL.push(date.format('dddd')) // Monday, Tuesday, Wednesday, etc.;
       }
       return {dates, datesFull, daysOfWeek, daysOfWeekFULL};
     }
 
-    // Example usage of the inner function
+    
     var sevenDayForecast = getSevenDayForecastForTimezone(timezone);
     console.log(sevenDayForecast.dates);
     console.log(sevenDayForecast.daysOfWeek);
     console.log(sevenDayForecast.datesFull);
+    // Display the currnet day on the page
     $(".today").html(sevenDayForecast.daysOfWeekFULL[0]);
     
     for (let i = 0; i < 7; i++) {
@@ -110,11 +144,12 @@ function getTimezoneForCoordinates(latitude, longitude) {
   });
 }
 
-
+// Function to get the weather data for the given coordinates
 function getWeatherData(latitude, longitude, callback) {
   $.getJSON(`/api/weather?latitude=${latitude}&longitude=${longitude}`, function (openMeteo) {
     processHourlyData(openMeteo.hourly.temperature_2m);
 
+    //converting the current time to the next hour or past hour and the feeding it to the hourly data to get the current weather
     console.log(openMeteo);
     var time = openMeteo.current.time;
     //console.log(`THIS IS TIME: ${time}`);
@@ -164,7 +199,8 @@ function getWeatherData(latitude, longitude, callback) {
         var precipitation_probab = openMeteo.hourly.precipitation_probability[i];
         var windSpeed = openMeteo.hourly.wind_speed_10m[i];
         var humidity = openMeteo.hourly.relative_humidity_2m[i];
-        // For Current Weather
+        
+        // using the weather code to display the weather status and icon for the current weather
         for (const [key, value] of Object.entries(weather_code)) {
           if (key == weatherCode) {
             $(".weatherStatus").html(value);
@@ -191,7 +227,7 @@ function getWeatherData(latitude, longitude, callback) {
           }
         }
       }
-      // For Seven Day Forecast
+      // For Seven Day Forecast that displays the weather icon
       for (let i = 0; i < 7; i++) {
         const weatherCode = openMeteo.daily.weather_code[i];
     
@@ -243,7 +279,7 @@ function getWeatherData(latitude, longitude, callback) {
     console.log("Hourly Temp: " + hourlyTemp);
     console.log("Hourly Apparent Temp: " + hourlyApparentTemp);
     console.log(openMeteo);
-
+    // This checks if the current temperature is in Fahrenheit or Celsius and converts it accordingly
     if ($("#convrt").hasClass("fahrenheit")) {
       $("#currntValue").html(convertToFahrenheit(currentTemp));
       $("#maxValue").html(convertToFahrenheit(maxTemp[0]));
@@ -277,123 +313,88 @@ function getWeatherData(latitude, longitude, callback) {
 
 //This is for getting the IP Address of user on load
 $(document).ready(()=>{
-            $("#convrt").addClass("celsius");
-            $.getJSON("https://api.ipify.org?format=json",
-            function (ipIFY) {
+  $("#convrt").addClass("celsius");
+  $.getJSON("https://api.ipify.org?format=json",
+      function (ipIFY) {
+        // Displayin IP address on screen
+        //$("#gfg").html(data.ip);
+        //Taking the IP address and getting the location of the user
+        $.getJSON("http://ip-api.com/json/"+ipIFY.ip,
+          function (ipAPI) {
+            var latitude = ipAPI.lat;
+            var longitude = ipAPI.lon;
+            $(".location").html(ipAPI.city+", "+ipAPI.regionName+", "+ipAPI.country);
+            getTimezoneForCoordinates(latitude, longitude)
+            //Sending the latitude and longitude to the getWeatherData function
+            getWeatherData(latitude, longitude);
+            getWeatherData(latitude, longitude, function() {
+              let firstDayTemperatures = dailyTemperatureData[0];
+                console.log(firstDayTemperatures)
+                console.log(firstDayTemperatures[5]); // This will log the temperatures for the first day after the data is loaded
+            });
 
- 
-                // Displayin IP address on screen
-                //$("#gfg").html(data.ip);
-
-                //Taking the IP address and getting the location of the user
-                $.getJSON("http://ip-api.com/json/"+ipIFY.ip,
-                
-                    function (ipAPI) {
-                        var latitude = ipAPI.lat;
-                        var longitude = ipAPI.lon;
-                        $(".location").html(ipAPI.city+", "+ipAPI.regionName+", "+ipAPI.country);
-                        getTimezoneForCoordinates(latitude, longitude)
-                        //Sending the latitude and longitude to the getWeatherData function
-                        getWeatherData(latitude, longitude);
-                        getWeatherData(latitude, longitude, function() {
-                          let firstDayTemperatures = dailyTemperatureData[0];
-                          console.log(firstDayTemperatures)
-                          console.log(firstDayTemperatures[5]); // This will log the temperatures for the first day after the data is loaded
-                        });
-
-                    }
-                )
-            
-            })
+          }
+        )
+      }
+  )
 });
 
 //This is asking User request for their location can be used to get the latitude and longitude of the user
 
 $(document).ready(()=>{
-    $("#fahrenheit").click(()=>{ 
-        if ($("#convrt").hasClass("celsius")){
-            $("#convrt").removeClass("celsius");
-            $("#convrt").addClass("fahrenheit");
-            var currntF = convertToFahrenheit($("#currntValue").text());
-            var maxF = convertToFahrenheit($("#maxValue").text());
-            var minF = convertToFahrenheit($("#minValue").text());
-            var aprtF = convertToFahrenheit($("#aprtValue").text());
-            var windF = kmToMiles($("#windValue").text());
-    
-            $("#currntValue").html(currntF);
-            $("#maxValue").html(maxF);
-            $("#minValue").html(minF);
-            $("#aprtValue").html(aprtF);
-            $(".tempEmblm").html("&deg;F");
-            $("#windValue").html(windF);
-            $("#speedEmblm").html("mph");
-            for(i=0; i<7; i++){
-              $(`#dailyMax${i+1}`).html(convertToFahrenheit($(`#dailyMax${i+1}`).text()));
-              $(`#dailyMin${i+1}`).html(convertToFahrenheit($(`#dailyMin${i+1}`).text()));
-          }
-        } else {
-            alert("Already in Fahrenheit");
-        }
-    });
+  //This is for the conversion of temperature from Celsius to Fahrenheit and vice versa on click of the button
+  $("#fahrenheit").click(()=>{
+    if ($("#convrt").hasClass("celsius")){
+      $("#convrt").removeClass("celsius");
+      $("#convrt").addClass("fahrenheit");
+      updateSlider("fahrenheit");
+      convertToFahrenheitBTN();
+    } else {
+      alert("Already in Fahrenheit");
+    }
+  });
 
-    $("#celsius").click(()=>{
-        if ($("#convrt").hasClass("fahrenheit")){
-            $("#convrt").removeClass("fahrenheit");
-            $("#convrt").addClass("celsius");
-            var currntC = convertToCelsius($("#currntValue").text());
-            var maxC = convertToCelsius($("#maxValue").text());
-            var minC = convertToCelsius($("#minValue").text());
-            var aprtC = convertToCelsius($("#aprtValue").text());
-            var windC = mphToKmh($("#windValue").text());
-    
-            $("#currntValue").html(currntC);
-            $("#maxValue").html(maxC);
-            $("#minValue").html(minC);
-            $("#aprtValue").html(aprtC);
-            $("#windValue").html(windC);
-            $("#speedEmblm").html("km/h");
-            $(".tempEmblm").html("&deg;C");
-            for(i=0; i<7; i++){
-                $(`#dailyMax${i+1}`).html(convertToCelsius($(`#dailyMax${i+1}`).text()));
-                $(`#dailyMin${i+1}`).html(convertToCelsius($(`#dailyMin${i+1}`).text()));
-            }
-        } else {
-            alert("Already in Celsius");
+  $("#celsius").click(()=>{
+    if ($("#convrt").hasClass("fahrenheit")){
+      $("#convrt").removeClass("fahrenheit");
+      $("#convrt").addClass("celsius");
+      updateSlider("celsius")
+      convertToCelsiusBTN();
+      } else {
+        alert("Already in Celsius");
+      }
+  });
+  //This is for the location button to get the location of the user
+  $('#globe').click(()=>{
+    alert("Please enable location services to get the weather of your location");
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      getTimezoneForCoordinates(latitude, longitude);
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      $.getJSON(`/api/location?lat=${latitude}&lon=${longitude}`,
+        function (locationIQ) {
+          console.log(locationIQ)
+          if(locationIQ.address.city == undefined || locationIQ.address.state == undefined){
+            $("#locatCITY").hide();
+            $("#locatSTATE").html(locationIQ.display_place);
+            $('#locatCOUNTRY').html(locationIQ.address.country);
+          } else {$(".location").html(locationIQ.address.city+", "+locationIQ.address.state+", "+locationIQ.address.country);}
         }
-    });
+      )
+        getWeatherData(latitude, longitude);
+      });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+      }
+  });
+});
 
-    $('#globe').click(()=>{
-        alert("Please enable location services to get the weather of your location");
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            getTimezoneForCoordinates(latitude, longitude);
-            console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-            $.getJSON(`/api/location?lat=${latitude}&lon=${longitude}`,
-            function (locationIQ) {
-                console.log(locationIQ)
-                if(locationIQ.address.city == undefined || locationIQ.address.state == undefined){
-                  $("#locatCITY").hide();
-                  $("#locatSTATE").html(locationIQ.display_place);
-                  $('#locatCOUNTRY').html(locationIQ.address.country);
-                } else {$(".location").html(locationIQ.address.city+", "+locationIQ.address.state+", "+locationIQ.address.country);}
-            }
-            )
-            getWeatherData(latitude, longitude);
-            });
-        } else {
-            console.log("Geolocation is not supported by this browser.");
-        }
-    });
-        }
-        
-);
-
-
+//This is for the search box from locationIQ API
 $(document).ready(()=>{
 
-$('#search-box-input').autocomplete({
+  $('#search-box-input').autocomplete({
     minChars: 3,
     deferRequestBy: 250,
     serviceUrl: '/api/autocomplete',
@@ -413,10 +414,10 @@ $('#search-box-input').autocomplete({
           value: dataItem.display_name,
           data: dataItem
         };
-      })
+    })
 
       return {
-        suggestions: suggestions
+      suggestions: suggestions
       };
     },
     onSelect: function(suggestion) {
@@ -450,48 +451,3 @@ $('#search-box-input').autocomplete({
   } 
 
 });
-
-/*
- //this is how to get the date of the next 7 days from today, output as "Day Month Date Year"
-
-	var date1 = new Date();
-
-	var date2 = new Date();
-
-	date2.setDate(date2.getDate() + 1);
-
-	var date3 = new Date();
-
-	date3.setDate(date3.getDate() + 2);
-
-	var date4 = new Date();
-
-	date4.setDate(date4.getDate() + 3);
-
-	var date5 = new Date();
-
-	date5.setDate(date5.getDate() + 4);
-
-	var date6 = new Date();
-
-	date6.setDate(date6.getDate() + 5);
-
-	var date7 = new Date();
-
-	date7.setDate(date7.getDate() + 6);
- 
-	console.log(date1.toDateString());
-
-	console.log(date2.toDateString());
-
-	console.log(date3.toDateString());
-
-	console.log(date4.toDateString());
-
-	console.log(date5.toDateString());
-
-	console.log(date6.toDateString());
-
-	console.log(date7.toDateString());
-
-*/
