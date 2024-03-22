@@ -46,7 +46,7 @@ app.get('/api/weather', async (req, res) => {
           current: 'temperature_2m,apparent_temperature,precipitation,weather_code',
           // Add other parameters as needed
           hourly: 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m',
-          daily: 'temperature_2m_max,temperature_2m_min',
+          daily: 'temperature_2m_max,temperature_2m_min,weather_code',
           timezone: 'auto'
         }
       });

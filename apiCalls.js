@@ -72,6 +72,7 @@ function processHourlyData(hourlyData) {
   }
 }
 
+
 function getTimezoneForCoordinates(latitude, longitude) {
   const url = `https://api.wheretheiss.at/v1/coordinates/${latitude},${longitude}`;
   $.getJSON(url, function (whereisthisat) {
@@ -103,13 +104,7 @@ function getTimezoneForCoordinates(latitude, longitude) {
     $(".today").html(sevenDayForecast.daysOfWeekFULL[0]);
     
     for (let i = 0; i < 7; i++) {
-      $(`.day${i}`).empty(); // Clear the contents of the container element
-      
-      if (i === 0) {
-        $(`.day${i}`).prepend(`<p id="day${i}">Today</p>`);
-      } else {
-        $(`.day${i}`).prepend(`<p id="day${i}">${sevenDayForecast.daysOfWeek[i]}</p>`);
-      }
+      $(`#day${i+1}`).text(sevenDayForecast.daysOfWeek[i]);
     }
 
   });
@@ -119,6 +114,8 @@ function getTimezoneForCoordinates(latitude, longitude) {
 function getWeatherData(latitude, longitude, callback) {
   $.getJSON(`/api/weather?latitude=${latitude}&longitude=${longitude}`, function (openMeteo) {
     processHourlyData(openMeteo.hourly.temperature_2m);
+
+    console.log(openMeteo);
     var time = openMeteo.current.time;
     //console.log(`THIS IS TIME: ${time}`);
 
@@ -167,7 +164,7 @@ function getWeatherData(latitude, longitude, callback) {
         var precipitation_probab = openMeteo.hourly.precipitation_probability[i];
         var windSpeed = openMeteo.hourly.wind_speed_10m[i];
         var humidity = openMeteo.hourly.relative_humidity_2m[i];
-
+        // For Current Weather
         for (const [key, value] of Object.entries(weather_code)) {
           if (key == weatherCode) {
             $(".weatherStatus").html(value);
@@ -194,6 +191,33 @@ function getWeatherData(latitude, longitude, callback) {
           }
         }
       }
+      // For Seven Day Forecast
+      for (let i = 0; i < 7; i++) {
+        const weatherCode = openMeteo.daily.weather_code[i];
+    
+        for (const [key, value] of Object.entries(weather_code)) {
+          if (key == weatherCode) {
+            if (key == 0) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}" src="assets/sun.svg" alt="clear-sky">`);
+            } else if (key == 1 || key == 2 || key == 3) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/cloudy.svg" alt="cloudy">`);
+            } else if (key == 45 || key == 48) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/fog.svg" alt="Fog">`);
+            } else if (key == 51 || key == 53 || key == 55 || key == 56 || key == 57) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/drizzle.svg" alt="drizzle">`);
+            } else if (key == 61 || key == 63 || key == 65 || key == 66 || key == 67) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/rain.svg" alt="rain">`);
+            } else if (key == 71 || key == 73 || key == 75 || key == 77) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/snowy.svg" alt="snowy">`);
+            } else if (key == 80 || key == 81 || key == 82 || key == 85 || key == 86) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/rainshowers.svg" alt="rain showers">`);
+            } else if (key == 95 || key == 96 || key == 99) {
+              $(`#wIcon${i+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/thunderstorm.svg" alt="thunderstorm">`);
+            }
+          }
+        }
+      }
+      
         $("#windValue").html(windSpeed);
         $("#precipValue").html(precipitation_probab);
         $("#aprtValue").html(apparentTemp);
@@ -224,10 +248,12 @@ function getWeatherData(latitude, longitude, callback) {
       $("#currntValue").html(convertToFahrenheit(currentTemp));
       $("#maxValue").html(convertToFahrenheit(maxTemp[0]));
       $("#minValue").html(convertToFahrenheit(minTemp[0]));
-      $("#windValue").html(kmToMiles$("#windValue").text());
+      $("#windValue").html(kmToMiles($("#windValue").text()));
       $("#speedEmblm").html("mph");
       $(".tempEmblm").html("&deg;F");
-
+      for (let i = 0; i < 7; i++) {
+        $(`#day${i+1}Temp`).html(`<span id="dailyMax${i+1}">${convertToFahrenheit(openMeteo.daily.temperature_2m_max[i])}</span>&deg; <span id="dailyMin${i+1}">${convertToFahrenheit(openMeteo.daily.temperature_2m_min[i])}</span>&deg;`);
+      }
     } else{
       $("#currntValue").html(currentTemp);
       $("#maxValue").html(maxTemp[0]);
@@ -235,6 +261,9 @@ function getWeatherData(latitude, longitude, callback) {
       $("#windValue").html(mphToKmh($("#windValue").text()));
       $("#speedEmblm").html("km/h");
       $(".tempEmblm").html("&deg;C");
+      for (let i = 0; i < 7; i++) {
+        $(`#day${i+1}Temp`).html(`<span id="dailyMax${i+1}">${openMeteo.daily.temperature_2m_max[i]}</span>&deg; <span id="dailyMin${i+1}">${openMeteo.daily.temperature_2m_min[i]}</span>&deg;`);
+      }
     }
   
     if (callback && typeof callback === 'function') {
@@ -298,6 +327,10 @@ $(document).ready(()=>{
             $(".tempEmblm").html("&deg;F");
             $("#windValue").html(windF);
             $("#speedEmblm").html("mph");
+            for(i=0; i<7; i++){
+              $(`#dailyMax${i+1}`).html(convertToFahrenheit($(`#dailyMax${i+1}`).text()));
+              $(`#dailyMin${i+1}`).html(convertToFahrenheit($(`#dailyMin${i+1}`).text()));
+          }
         } else {
             alert("Already in Fahrenheit");
         }
@@ -320,6 +353,10 @@ $(document).ready(()=>{
             $("#windValue").html(windC);
             $("#speedEmblm").html("km/h");
             $(".tempEmblm").html("&deg;C");
+            for(i=0; i<7; i++){
+                $(`#dailyMax${i+1}`).html(convertToCelsius($(`#dailyMax${i+1}`).text()));
+                $(`#dailyMin${i+1}`).html(convertToCelsius($(`#dailyMin${i+1}`).text()));
+            }
         } else {
             alert("Already in Celsius");
         }
@@ -328,8 +365,6 @@ $(document).ready(()=>{
     $('#globe').click(()=>{
         alert("Please enable location services to get the weather of your location");
         if (navigator.geolocation) {
-            $("#convrt").removeClass(["fahrenheit", "celsius"]);
-            $("#convrt").addClass("celsius");
             navigator.geolocation.getCurrentPosition(function(position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;

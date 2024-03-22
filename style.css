@@ -223,13 +223,21 @@ input:checked + .slider:before {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-#wIcon1{
+#wIcon1, #wIcon2, #wIcon3, #wIcon4, #wIcon5, #wIcon6, #wIcon7{
   width: 82px;
-  height: 93px;
+  height: 85px;
   position: relative;
   left: 3px;
   top: 5px;
   display: block;
+}
+
+#dailyIcon1, #dailyIcon2, #dailyIcon3, #dailyIcon4, #dailyIcon5, #dailyIcon6, #dailyIcon7{
+  width: 65px;
+  height: 65px;
+  position: relative;
+  top: 10px;
+  left: 0px;
 }
 
 p#day1, p#day2, p#day3, p#day4, p#day5, p#day6, p#day7{
@@ -243,16 +251,17 @@ p#day1, p#day2, p#day3, p#day4, p#day5, p#day6, p#day7{
 p#day1Temp, p#day2Temp, p#day3Temp, p#day4Temp, p#day5Temp, p#day6Temp, p#day7Temp{
   margin-top: 0;
   margin-bottom: 0;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   position: relative;
   padding-bottom: 3px;
-  top: 28px;
-  left: 26px;
+  top: 9px;
+  left: 0px;
 }
 
 .sevenDayContent {
-  display: contents;
+  display: flex;
+  gap: 5px;
 }
   
 @media screen and (max-width: 600px) {
