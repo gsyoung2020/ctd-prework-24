@@ -1,40 +1,39 @@
 <html>
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
-    <head>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="node_modules/moment/moment.js"></script>
     <script src="node_modules/moment-timezone/builds/moment-timezone-with-data.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
-     <script src="apiCalls.js"></script> 
+    <script src="apiCalls.js"></script> 
     <script src="functionTest.js"></script>
     <!-- <script src="test.js"></script> -->
-   <link rel="stylesheet" type="text/css" href="style.css">
-   <link rel="stylesheet" type="text/css" href="locationIQ.css">
-</head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="locationIQ.css">
+  </head>
 <html>
 <body onload="startTime()">
-    <div class="topBar">
-      <img src="assets/flower.svg" alt="Weather Icon" id="topBarLOGO">
-      <div id="search-box">
-        <div class="locationiq-autocomplete-control locationiq-bounds locationiq-control locationiq-autocomplete-expanded" id="search-box-area">
-          <input class="locationiq-autocomplete-input ui-autocomplete-input" id="search-box-input" title="Search" placeholder="Search for an address...">
-          <a class="locationiq-autocomplete-search-icon"></a>
-          <a class="locationiq-reset-control" id="reset-autocomplete" title="Reset">x</a> 
-        </div>
+  <div class="topBar">
+    <img src="assets/flower.svg" alt="Weather Icon" id="topBarLOGO">
+    <div id="search-box">
+      <div class="locationiq-autocomplete-control locationiq-bounds locationiq-control locationiq-autocomplete-expanded" id="search-box-area">
+        <input class="locationiq-autocomplete-input ui-autocomplete-input" id="search-box-input" title="Search" placeholder="Search for an address...">
+        <a class="locationiq-autocomplete-search-icon"></a>
+        <a class="locationiq-reset-control" id="reset-autocomplete" title="Reset">x</a> 
       </div>
-      <img src="assets/globe.svg" alt="Weather Icon" title="See Your Current Location" id="globe">
-      <div class="right-section">
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider round"><span style="position: absolute; left: 7px; top: 8px" id="far">F</span><span id="cel" style="position: absolute; left: 40px; top: 8px">C</span></span>
-        </label>
-        <p id="timetxt"></p>
+    </div>
+    <img src="assets/globe.svg" alt="Weather Icon" title="See Your Current Location" id="globe">
+    <div class="right-section">
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"><span style="position: absolute; left: 7px; top: 8px" id="far">F</span><span id="cel" style="position: absolute; left: 40px; top: 8px">C</span></span>
+      </label>
+      <p id="timetxt"></p>
       </div>
     </div>
     <div class="currntTab">
@@ -61,6 +60,24 @@
         <p class="minTemp">Low: <span id="minValue"></span><span class="tempEmblm"></span></p>
         <p class="weatherStatus"></p>
       </div>
+    </div>
+    <div class="sevenDaytab">
+      <div class="sevenDayContent">
+        <div class="day1">
+        </div>
+        <div class="day2">
+        </div>
+        <div class="day3">
+        </div>
+        <div class="day4">
+        </div>
+        <div class="day5">
+        </div>
+        <div class="day6">
+        </div>
+        <div class="day7">
+        </div>  
+    </div>
     </div>
     <!-- <a href="javascript:void(0);" class="validator">See Your Current Location</a> -->
     <!-- <p class="aprtTemp"> Apparnt Temp: <span id="aprtValue"></span><span class="tempEmblm"></span></p> -->

@@ -101,6 +101,16 @@ function getTimezoneForCoordinates(latitude, longitude) {
     console.log(sevenDayForecast.daysOfWeek);
     console.log(sevenDayForecast.datesFull);
     $(".today").html(sevenDayForecast.daysOfWeekFULL[0]);
+    
+    for (let i = 0; i < 7; i++) {
+      $(`.day${i}`).empty(); // Clear the contents of the container element
+      
+      if (i === 0) {
+        $(`.day${i}`).prepend(`<p id="day${i}">Today</p>`);
+      } else {
+        $(`.day${i}`).prepend(`<p id="day${i}">${sevenDayForecast.daysOfWeek[i]}</p>`);
+      }
+    }
 
   });
 }
