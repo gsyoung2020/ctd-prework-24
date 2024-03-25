@@ -29,6 +29,33 @@ let weather_code = {
   96: "Light Hail Thunderstorm",
   99: "Heavy Hail Thunderstorm"
 }
+let hourlytime = {
+  0: "12 AM",
+  1: "1 AM",
+  2: "2 AM",
+  3: "3 AM",
+  4: "4 AM",
+  5: "5 AM",
+  6: "6 AM",
+  7: "7 AM",
+  8: "8 AM",
+  9: "9 AM",
+  10: "10 AM",
+  11: "11 AM",
+  12: "12 PM",
+  13: "1 PM",
+  14: "2 PM",
+  15: "3 PM",
+  16: "4 PM",
+  17: "5 PM",
+  18: "6 PM",
+  19: "7 PM",
+  20: "8 PM",
+  21: "9 PM",
+  22: "10 PM",
+  23: "11 PM",
+  24: "12 AM"
+}
 
 function updateSlider(unit) {
   if (unit === "fahrenheit") {
@@ -36,6 +63,33 @@ function updateSlider(unit) {
   } else {
     $(".switch input[type='checkbox']").prop("checked", false);
   }
+}
+
+function hourlyIMG(weatherCode, index) {
+  console.log(weatherCode);
+  for (let i = 0; i <= 23; i++) {
+  for (const [key, value] of Object.entries(weather_code)) {
+    if (key == weatherCode) {
+      if (key == 0) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}" src="assets/sun.svg" alt="clear-sky">`);
+      } else if (key == 1 || key == 2 || key == 3) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/cloudy.svg" alt="cloudy">`);
+      } else if (key == 45 || key == 48) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/fog.svg" alt="Fog">`);
+      } else if (key == 51 || key == 53 || key == 55 || key == 56 || key == 57) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/drizzle.svg" alt="drizzle">`);
+      } else if (key == 61 || key == 63 || key == 65 || key == 66 || key == 67) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/rain.svg" alt="rain">`);
+      } else if (key == 71 || key == 73 || key == 75 || key == 77) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/snowy.svg" alt="snowy">`);
+      } else if (key == 80 || key == 81 || key == 82 || key == 85 || key == 86) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/rainshowers.svg" alt="rain showers">`);
+      } else if (key == 95 || key == 96 || key == 99) {
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/thunderstorm.svg" alt="thunderstorm">`);
+      }
+    }
+  }
+}
 }
 
 // Conversion functions
@@ -104,7 +158,7 @@ function processHourlyData(hourlyTemperature, hourlyPrecipitation, hourlyWeather
   
   
   // Iterate over the hourlyData array in 24-hour chunks
-  for (let i = 0; i < HOURS_IN_DAY; i++) {
+  for (let i = 0; i < 7; i++) {
       // Extract 24-hour chunks and store them in dailyTemperatureData
       let dailyTemp = hourlyTemperature.slice(i * HOURS_IN_DAY, (i + 1) * HOURS_IN_DAY);
       let dailyPrecip = hourlyPrecipitation.slice(i * HOURS_IN_DAY, (i + 1) * HOURS_IN_DAY);
@@ -157,15 +211,51 @@ function getTimezoneForCoordinates(latitude, longitude) {
   });
 }
 
+function updateHourlyData(hourlyTM) {
+  alert("made it here");
+  for (let i = 0; i <= 23; i++) {
+    if (i <= 11) {
+      $(`#hour${i+1}`).html(hourlytime[i]);
+      $(`#hour${i+1}Temp`).html(dailyTemperatureData[hourlyTM][i]);
+      $(`#hour${i+1}code`).html(weather_code[dailyWeatherCodeData[hourlyTM][i]]);
+      hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
+      $(`#hour${i+1}precip`).html(dailyPrecipitationData[hourlyTM][i]);
+      $(`#hour${i+1}wind`).html(dailyWindSpeedData[hourlyTM][i]);
+    } else {
+      $(`#hour${i+1}`).html(hourlytime[i]);
+      $(`#hour${i+1}Temp`).html(dailyTemperatureData[hourlyTM][i]);
+      $(`#hour${i+1}code`).html(weather_code[dailyWeatherCodeData[hourlyTM][i]]);
+      hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
+      $(`#hour${i+1}precip`).html(dailyPrecipitationData[hourlyTM][i]);
+      $(`#hour${i+1}wind`).html(dailyWindSpeedData[hourlyTM][i]);
+    }
+  }
+}
+
 // Function to get the weather data for the given coordinates
 function getWeatherData(latitude, longitude, callback) {
   $.getJSON(`/api/weather?latitude=${latitude}&longitude=${longitude}`, function (openMeteo) {
+    
     processHourlyData(
       openMeteo.hourly.temperature_2m,
       openMeteo.hourly.precipitation_probability,
       openMeteo.hourly.weather_code,
       openMeteo.hourly.wind_speed_10m
     );
+   /* dailyTemperatureData[0];
+    dailyPrecipitationData[0];
+    dailyWeatherCodeData[0];
+    dailyWindSpeedData[0];*/
+
+
+    // This will log the temperatures for the first day after the data is loaded
+
+    console.log(dailyTemperatureData);
+    console.log(dailyPrecipitationData);
+    console.log(dailyWeatherCodeData);
+    console.log(dailyWindSpeedData);
+
+    // This is for the current hourly weather data
 
     
     //if I get to this one
@@ -328,13 +418,55 @@ function getWeatherData(latitude, longitude, callback) {
       callback();
     }
   });
-  
+  $(".day1").addClass("dayActive");
 }
 
 
 
 //This is for getting the IP Address of user on load
 $(document).ready(()=>{
+  
+
+  $(".sevenDayContent").children().click(function() {
+    var clickedIndex = $(this).index();
+    alert("Clicked element index: " + clickedIndex);
+    for (let i = 0; i < 7; i++) {
+      if (clickedIndex == i) {
+        $(`.day${i+1}`).addClass("dayActive");
+      } else {
+        $(`.day${i+1}`).removeClass("dayActive");
+      }
+    }
+    updateHourlyData(clickedIndex);
+
+  })
+
+  //This is for the hourly weather data
+
+  for (let i = 0; i <= 23; i++) {
+    if (i <= 11) {
+      $(`#first12`).append(`<div class="hour${i+1}">
+      <p id="hour${i+1}">${hourlytime[i]}</p>
+      <p id=hour${i+1}Temp></p>
+      <div id="wIconH${i+1}"></div>
+      <p id="hour${i+1}code"></p>
+      <p id="hour${i+1}precip"></p>
+      <p id="hour${i+1}wind"></p>
+      </div>`);
+    } else {
+      $(`#second12`).append(`<div class="hour${i+1}">
+      <p id="hour${i+1}">${hourlytime[i]}</p>
+      <p id=hour${i+1}Temp></p>
+      <div id="wIconH${i+1}"></div>
+      <p id="hour${i+1}code"></p>
+      <p id="hour${i+1}precip"></p>
+      <p id="hour${i+1}wind"></p>
+      </div>`);
+    }
+  }
+
+  
+
   $("#convrt").addClass("celsius");
   $.getJSON("https://api.ipify.org?format=json",
       function (ipIFY) {
@@ -346,10 +478,13 @@ $(document).ready(()=>{
             var latitude = ipAPI.lat;
             var longitude = ipAPI.lon;
             $(".location").html(ipAPI.city+", "+ipAPI.regionName+", "+ipAPI.country);
-            getTimezoneForCoordinates(latitude, longitude)
+            getTimezoneForCoordinates(latitude, longitude);
             //Sending the latitude and longitude to the getWeatherData function
-            getWeatherData(latitude, longitude);
-            getWeatherData(latitude, longitude, function() {
+            getWeatherData(latitude, longitude, function(){
+              updateHourlyData(0);
+            });
+            
+          /*getWeatherData(latitude, longitude, function() {
               //index 0 is the first day
               let firstDayTemperatures = dailyTemperatureData[0];
               let firstDayPrecipitation = dailyPrecipitationData[0];
@@ -364,7 +499,7 @@ $(document).ready(()=>{
               console.log(firstDayWeatherCode);
               console.log(firstDayWindSpeed.length);
               console.log(firstDayWindSpeed);
-            });
+            });*/
 
           }
         )

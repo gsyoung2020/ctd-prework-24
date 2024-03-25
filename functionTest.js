@@ -59,6 +59,16 @@ $(document).ready(function() {
         return i;
     }
 
+    $("#prev").click(function() {
+    $("#first12").show()
+    $("#second12").hide()  
+    })
+
+    $("#next").click(function() {
+    $("#first12").hide()
+    $("#second12").show()
+    })
+
     startTime();
     $(".switch input[type='checkbox']").click(function() {
       if ($(this).is(":checked")) {

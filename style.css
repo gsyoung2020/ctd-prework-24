@@ -120,9 +120,9 @@ input:checked + .slider:before {
 .currntTab {
   background-color: #f5f5f5;
   border-radius: 10px;
-  padding: 20px;
+  padding: 25px;
   margin: 20px auto;
-  max-width: 600px;
+  max-width: 735px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
   
@@ -211,16 +211,27 @@ input:checked + .slider:before {
 
 /*seven day tab*/
 
+.day1, .day2, .day3, .day4, .day5, .day6, .day7 {
+padding: 10px;
+
+}
+
 .sevenDaytab{
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #f5f5f5;
   border-radius: 10px;
-  padding: 20px;
+  padding: 25px;
   margin: 20px auto;
-  max-width: 600px;
+  max-width: 735px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dayActive{
+  background-color: #030640;
+  color: white;
+  border-radius: 10px;
 }
 
 #wIcon1, #wIcon2, #wIcon3, #wIcon4, #wIcon5, #wIcon6, #wIcon7{
@@ -263,7 +274,35 @@ p#day1Temp, p#day2Temp, p#day3Temp, p#day4Temp, p#day5Temp, p#day6Temp, p#day7Te
   display: flex;
   gap: 5px;
 }
-  
+
+/*Hourly Tab*/
+.hourlyTab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 25px;
+  margin: 20px auto;
+  max-width: 735px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hourlyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hour1, .hour2, .hour3, .hour4, .hour5, .hour6, .hour7, .hour8, .hour9, .hour10, .hour11, .hour12, .hour13, .hour14, .hour15, .hour16, .hour17, .hour18, .hour19, .hour20, .hour21, .hour22, .hour23, .hour24 {
+  display: flex;
+  flex-direction: row;
+  gap: 56px;
+  align-items: end;
+  justify-content: space-evenly;
+}
+
+
 @media screen and (max-width: 600px) {
   .currntTab {
   padding: 10px;
