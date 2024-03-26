@@ -67,6 +67,14 @@ let daysFull = {
   SUN: "Sunday"
 } 
 
+var currentPrecipitation;
+var currentHumidity;
+var currentWeatherCode;
+var currentMaxTemp;
+var currentMinTemp;
+var currentWindSpeed;
+var current_Temp;
+
 function whatisToday(value) {
   for (const [key, val] of Object.entries(daysFull)) {
     if (key == value) {
@@ -164,7 +172,6 @@ function currentIMG(weatherCode) {
         }
 }
 
-// Conversion functions
 function convertToFahrenheitBTN() {
   $(".minTemp, .maxTemp, .currntTemp, .aprtTemp").each(function() {
     var tempValue = $(this).find("span:first-child").text();
@@ -180,6 +187,8 @@ function convertToFahrenheitBTN() {
     $(`#dailyMax${i+1}`).text(convertToFahrenheit($(`#dailyMax${i+1}`).text()));
     $(`#dailyMin${i+1}`).text(convertToFahrenheit($(`#dailyMin${i+1}`).text()));
   }
+  $("#windValue").html(kmToMiles($("#windValue").text()));
+  $("#speedEmblm").html("mph");
 }
 
 function convertToCelsiusBTN() {
@@ -197,6 +206,8 @@ function convertToCelsiusBTN() {
     $(`#dailyMax${i+1}`).text(convertToCelsius($(`#dailyMax${i+1}`).text()));
     $(`#dailyMin${i+1}`).text(convertToCelsius($(`#dailyMin${i+1}`).text()));
   }
+  $("#windValue").html(mphToKmh($("#windValue").text()));
+  $("#speedEmblm").html("km/h");
 }
 
 function convertToFahrenheit(celsius) {
@@ -229,7 +240,7 @@ function processHourlyData(hourlyTemperature, hourlyPrecipitation, hourlyWeather
   dailyWeatherCodeData = [];
   dailyWindSpeedData = [];
   dailyHumidityData = [];
-  
+  console.log(hourlyTemperature);
   
   // Iterate over the hourlyData array in 24-hour chunks
   for (let i = 0; i < 7; i++) {
@@ -287,44 +298,30 @@ function getTimezoneForCoordinates(latitude, longitude) {
   });
 }
 
-var currntTempStored = ""
-var storedPrecip = ""
-var storedWind = ""
-var storedHumid = ""
-
-//All this is broken and needs to be fixed
 function updateHourlyData(hourlyTM) {
-  var isInitialLoad = $(".day1").hasClass("stored");
-
-  if (isInitialLoad || hourlyTM === 0) {
-    currntTempStored = $("#currntValue").text();
-    storedPrecip = $("#precipValue").text();
-    storedWind = $("#windValue").text();
-    storedHumid = $("#humValue").text();
-    $(".day1").removeClass("stored");
-  }
-
   var windSum = 0;
   var precipSum = 0;
   var tempSum = 0;
   var humidSum = 0;
   var selectedHigh = $('.sevenDayContent').children().eq(hourlyTM).find(`#dailyMax${hourlyTM+1}`).text();
   var selectedLow = $('.sevenDayContent').children().eq(hourlyTM).find(`#dailyMin${hourlyTM+1}`).text();
-  $("#maxValue").html(selectedHigh);
-  $("#minValue").html(selectedLow);
   var mostFrequentWeatherCode = findMulti(dailyWeatherCodeData[hourlyTM]);
   currentIMG(mostFrequentWeatherCode);
 
-
+  alert(hourlyTM)
 
   if (hourlyTM === 0) {
-    $("#windValue").html(storedWind);
-    $("#precipValue").html(storedPrecip);
-    $("#currntValue").html(currntTempStored);
-    $("#humValue").html(storedHumid);
-  } else {
+    // Display the stored current weather data
+    $("#precipValue").html(currentPrecipitation);
+    $("#humValue").html(currentHumidity);
+    $("#maxValue").html(currentMaxTemp);
+    $("#minValue").html(currentMinTemp);
+    $("#windValue").html(currentWindSpeed);
+    $("#currntValue").html(current_Temp);
+    console.log(`this is the current wind speed ${currentWindSpeed}`)
+    }  else {
     for (let i = 0; i < 23; i++) {
-      windSum += dailyTemperatureData[hourlyTM][i];
+      windSum += dailyWindSpeedData[hourlyTM][i];
       precipSum += dailyPrecipitationData[hourlyTM][i];
       tempSum += dailyTemperatureData[hourlyTM][i];
       humidSum += dailyHumidityData[hourlyTM][i];
@@ -333,34 +330,23 @@ function updateHourlyData(hourlyTM) {
     var precipAvg = Math.round(precipSum / 24);
     var tempAvg = Math.round(tempSum / 24);
     var humidAvg = Math.round(humidSum / 24);
+    
     $("#windValue").html(windAvg);
     $("#precipValue").html(precipAvg);
     $("#currntValue").html(tempAvg);
     $("#humValue").html(humidAvg);
-  }
-
-  for (let i = 0; i <= 23; i++) {
-    if (i <= 11) {
-      $(`#hour${i+1}`).html(hourlytime[i]);
-      $(`#hour${i+1}Temp`).html(dailyTemperatureData[hourlyTM][i]);
-      $(`#hour${i+1}code`).html(weather_code[dailyWeatherCodeData[hourlyTM][i]]);
-      hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
-      $(`#hour${i+1}precip`).html(dailyPrecipitationData[hourlyTM][i]);
-      $(`#hour${i+1}wind`).html(dailyWindSpeedData[hourlyTM][i]);
-    } else {
-      $(`#hour${i+1}`).html(hourlytime[i]);
-      $(`#hour${i+1}Temp`).html(dailyTemperatureData[hourlyTM][i]);
-      $(`#hour${i+1}code`).html(weather_code[dailyWeatherCodeData[hourlyTM][i]]);
-      hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
-      $(`#hour${i+1}precip`).html(dailyPrecipitationData[hourlyTM][i]);
-      $(`#hour${i+1}wind`).html(dailyWindSpeedData[hourlyTM][i]);
-    }
+    $("#maxValue").html(selectedHigh);
+    $("#minValue").html(selectedLow);
+    console.log(`this is the avg wind speed ${windAvg}`)
+    
   }
 }
 
 // Function to get the weather data for the given coordinates
 function getWeatherData(latitude, longitude, callback) {
   $.getJSON(`/api/weather?latitude=${latitude}&longitude=${longitude}`, function (openMeteo) {
+
+    console.log(openMeteo);
     
     processHourlyData(
       openMeteo.hourly.temperature_2m,
@@ -369,11 +355,6 @@ function getWeatherData(latitude, longitude, callback) {
       openMeteo.hourly.wind_speed_10m,
       openMeteo.hourly.relative_humidity_2m
     );
-   /* dailyTemperatureData[0];
-    dailyPrecipitationData[0];
-    dailyWeatherCodeData[0];
-    dailyWindSpeedData[0];*/
-
 
     // This will log the temperatures for the first day after the data is loaded
 
@@ -486,12 +467,22 @@ function getWeatherData(latitude, longitude, callback) {
     var hourlyTemp = openMeteo.hourly.temperature_2m;
     var hourlyApparentTemp = openMeteo.hourly.apparent_temperature;
 
+    //Global variables for the current weather data
+    currentPrecipitation = precipitation_probab;
+    currentHumidity = humidity;
+    currentWeatherCode = weatherCode;
+    currentMaxTemp = maxTemp[0];
+    currentMinTemp = minTemp[0];
+    currentWindSpeed = windSpeed;
+    current_Temp = currentTemp;
+
     //console.log("Current Temp [current]: " + currentTemp);
     //console.log("Max Temp: " + maxTemp[0]);
     //console.log("Min Temp: " + minTemp[0]);
     //console.log("Hourly Temp: " + hourlyTemp);
     //console.log("Hourly Apparent Temp: " + hourlyApparentTemp);
     //console.log(openMeteo);
+
     // This checks if the current temperature is in Fahrenheit or Celsius and converts it accordingly
     if ($("#convrt").hasClass("fahrenheit")) {
       $("#currntValue").html(convertToFahrenheit(currentTemp));
@@ -510,6 +501,7 @@ function getWeatherData(latitude, longitude, callback) {
       $("#windValue").html(mphToKmh($("#windValue").text()));
       $("#speedEmblm").html("km/h");
       $(".tempEmblm").html("&deg;C");
+
       for (let i = 0; i < 7; i++) {
         $(`#day${i+1}Temp`).html(`<span id="dailyMax${i+1}">${openMeteo.daily.temperature_2m_max[i]}</span>&deg; <span id="dailyMin${i+1}">${openMeteo.daily.temperature_2m_min[i]}</span>&deg;`);
       }
@@ -641,6 +633,16 @@ $(document).ready(()=>{
         alert("Already in Celsius");
       }
   });
+  $(".switch input[type='checkbox']").click(function() {
+    if ($(this).is(":checked")) {
+      $("#convrt").removeClass("celsius").addClass("fahrenheit");
+      convertToFahrenheitBTN();
+    } else {
+      $("#convrt").removeClass("fahrenheit").addClass("celsius");
+      convertToCelsiusBTN();
+    }
+  });
+
   //This is for the location button to get the location of the user
   $('#globe').click(()=>{
     alert("Please enable location services to get the weather of your location");
@@ -660,7 +662,9 @@ $(document).ready(()=>{
           } else {$(".location").html(locationIQ.address.city+", "+locationIQ.address.state+", "+locationIQ.address.country);}
         }
       )
-        getWeatherData(latitude, longitude);
+      getWeatherData(latitude, longitude, function(){
+        updateHourlyData(0);
+      });
       });
       } else {
         //console.log("Geolocation is not supported by this browser.");
@@ -705,7 +709,9 @@ $(document).ready(()=>{
         if(suggestion.data.address.city == undefined || suggestion.data.address.state == undefined){
           $(".location").html(suggestion.data.display_place);}
         else { $(".location").html(suggestion.data.address.city+", "+suggestion.data.address.state+", "+suggestion.data.address.country);}
-        getWeatherData(latitude, longitude);
+        getWeatherData(latitude, longitude, function(){
+          updateHourlyData(0);
+        });
         getTimezoneForCoordinates(latitude, longitude);
         $('#search-box-input').val("")
     }
@@ -728,3 +734,4 @@ $(document).ready(()=>{
   } 
 
 });
+ 
