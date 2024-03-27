@@ -120,6 +120,7 @@ function hourlyIMG(weatherCode, index) {
   for (let i = 0; i <= 23; i++) {
   for (const [key, value] of Object.entries(weather_code)) {
     if (key == weatherCode) {
+      $(`#hour${index+1}code`).html(value);
       if (key == 0) {
         $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}" src="assets/sun.svg" alt="clear-sky">`);
       } else if (key == 1 || key == 2 || key == 3) {
@@ -299,6 +300,11 @@ function getTimezoneForCoordinates(latitude, longitude) {
 }
 
 function updateHourlyData(hourlyTM) {
+  if($("#second12").is(':visible')) {
+    $("#second12").hide();
+    $("#first12").show();
+  }
+
   var windSum = 0;
   var precipSum = 0;
   var tempSum = 0;
@@ -307,8 +313,6 @@ function updateHourlyData(hourlyTM) {
   var selectedLow = $('.sevenDayContent').children().eq(hourlyTM).find(`#dailyMin${hourlyTM+1}`).text();
   var mostFrequentWeatherCode = findMulti(dailyWeatherCodeData[hourlyTM]);
   currentIMG(mostFrequentWeatherCode);
-
-  alert(hourlyTM)
 
   if (hourlyTM === 0) {
     // Display the stored current weather data
@@ -338,8 +342,18 @@ function updateHourlyData(hourlyTM) {
     $("#maxValue").html(selectedHigh);
     $("#minValue").html(selectedLow);
     console.log(`this is the avg wind speed ${windAvg}`)
-    
   }
+  
+  // Displaying the hourly weather data in the hourlytab --> hourlycontent --> first12 and second12 remeber your hour classes start at 1
+  for (let i = 0; i <= 23; i++) {
+    $(`#tempHourlyValue${i+1}`).html(dailyTemperatureData[hourlyTM][i]);
+    //$(`#hour${i+1}code`).html(dailyWeatherCodeData[hourlyTM][i]);
+    $(`#percipHorulyValue${i+1}`).html(dailyPrecipitationData[hourlyTM][i]);
+    $(`#windHorulyValue${i+1}`).html(dailyWindSpeedData[hourlyTM][i]);
+    hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
+    $(`#hourlySpeedEmblm${i+1}`).html("km/h")
+  }
+
 }
 
 // Function to get the weather data for the given coordinates
@@ -548,20 +562,20 @@ $(document).ready(()=>{
     if (i <= 11) {
       $(`#first12`).append(`<div class="hour${i+1}">
       <p id="hour${i+1}">${hourlytime[i]}</p>
-      <p id=hour${i+1}Temp></p>
+      <p id="hour${i+1}Temp"><span id="tempHourlyValue${i+1}"></span><span class="tempEmblm"></span></p>
       <div id="wIconH${i+1}"></div>
       <p id="hour${i+1}code"></p>
-      <p id="hour${i+1}precip"></p>
-      <p id="hour${i+1}wind"></p>
+      <p id="hour${i+1}precip"><img id="dropImg" src="assets/drop.svg" alt="raindrop"/><span id="percipHorulyValue${i+1}"></span>%</p>
+      <p id="hour${i+1}wind"><span id="windHorulyValue${i+1}"></span> <span id="hourlySpeedEmblm${i+1}"></span></p>
       </div>`);
     } else {
       $(`#second12`).append(`<div class="hour${i+1}">
       <p id="hour${i+1}">${hourlytime[i]}</p>
-      <p id=hour${i+1}Temp></p>
+      <p id="hour${i+1}Temp"><span id="tempHourlyValue${i+1}"></span><span class="tempEmblm"></span></p>
       <div id="wIconH${i+1}"></div>
       <p id="hour${i+1}code"></p>
-      <p id="hour${i+1}precip"></p>
-      <p id="hour${i+1}wind"></p>
+      <p id="hour${i+1}precip"><img id="dropImg" src="assets/drop.svg" alt="raindrop"/><span id="percipHorulyValue${i+1}"></span>%</p>
+      <p id="hour${i+1}wind"><span id="windHorulyValue${i+1}"></span> <span id="hourlySpeedEmblm${i+1}"></span></p>
       </div>`);
     }
   }

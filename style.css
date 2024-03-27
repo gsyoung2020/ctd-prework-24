@@ -302,6 +302,15 @@ p#day1Temp, p#day2Temp, p#day3Temp, p#day4Temp, p#day5Temp, p#day6Temp, p#day7Te
   justify-content: space-evenly;
 }
 
+#hour1precip, #hour2precip, #hour3precip, #hour4precip, #hour5precip, #hour6precip, #hour7precip, #hour8precip, #hour9precip, #hour10precip, #hour11precip, #hour12precip, #hour13precip, #hour14precip, #hour15precip, #hour16precip, #hour17precip, #hour18precip, #hour19precip, #hour20precip, #hour21precip, #hour22precip, #hour23precip, #hour24precip {
+display: flex;
+align-items: self-end;
+}
+
+#dropImg {
+  width: 20px;
+  transform: rotate(25deg);
+}
 
 @media screen and (max-width: 600px) {
   .currntTab {
