@@ -10,6 +10,10 @@
 
 }
 
+#cel, #fah {
+  user-select: none;
+}
+
 .topBar{
   display: flex;
   justify-content: space-between;
@@ -40,7 +44,7 @@
 }
 
 img#globe {
-  position: fixed;
+  position: absolute;
   width: 35px;
   top: 9px;
   left: 62%;

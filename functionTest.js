@@ -1,5 +1,9 @@
 $(document).ready(function() {
+    function unchecker(){
+        $(".switch input[type='checkbox']").prop('checked', false)
+    }
     function startTime() {
+
         // Look into what Brian K sent in Teams, toLocaleTimeString()
         var today = new Date();
         var h = today.getHours();
@@ -35,6 +39,10 @@ $(document).ready(function() {
     $("#second12").show()
     })
 
-    startTime();
+    function onbodyActive() {
+        startTime();
+        unchecker();
+    }
+    onbodyActive();
 });
 

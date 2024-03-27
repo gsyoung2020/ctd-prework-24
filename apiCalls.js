@@ -84,6 +84,10 @@ function whatisToday(value) {
 
 }
 
+function unchecker(){
+  $(".switch input[type='checkbox']").attr('checked', false)
+}
+
 function findMulti(arr) {
   // Create an object to store the frequency count
   const frequencyCount = {};
@@ -181,7 +185,7 @@ function convertToFahrenheitBTN() {
       $(this).find("span:first-child").text(fahrenheitValue.toFixed(1));
     }
   });
-  $(".tempEmblm").text("F");
+  $(".tempEmblm").html("&deg;F");
 
   // Convert seven-day forecast temperatures to Fahrenheit
   for (let i = 0; i < 7; i++) {
@@ -190,6 +194,13 @@ function convertToFahrenheitBTN() {
   }
   $("#windValue").html(kmToMiles($("#windValue").text()));
   $("#speedEmblm").html("mph");
+
+  // Convert hourly temperatures to Fahrenheit
+  for (let i = 0; i <= 23; i++) {
+    $(`#tempHourlyValue${i+1}`).html(convertToFahrenheit($(`#tempHourlyValue${i+1}`).text()));
+    $(`#windHorulyValue${i+1}`).html(kmToMiles($(`#windHorulyValue${i+1}`).text()));
+    $(`#hourlySpeedEmblm${i+1}`).html("mph");
+  }
 }
 
 function convertToCelsiusBTN() {
@@ -200,7 +211,7 @@ function convertToCelsiusBTN() {
       $(this).find("span:first-child").text(celsiusValue.toFixed(1));
     }
   });
-  $(".tempEmblm").text("C");
+  $(".tempEmblm").html("&deg;C");
 
   // Convert seven-day forecast temperatures to Celsius
   for (let i = 0; i < 7; i++) {
@@ -209,6 +220,13 @@ function convertToCelsiusBTN() {
   }
   $("#windValue").html(mphToKmh($("#windValue").text()));
   $("#speedEmblm").html("km/h");
+
+  // Convert hourly temperatures to Celsius
+  for (let i = 0; i <= 23; i++) {
+    $(`#tempHourlyValue${i+1}`).html(convertToCelsius($(`#tempHourlyValue${i+1}`).text()));
+    $(`#windHorulyValue${i+1}`).html(mphToKmh($(`#windHorulyValue${i+1}`).text()));
+    $(`#hourlySpeedEmblm${i+1}`).html("km/h");
+  }
 }
 
 function convertToFahrenheit(celsius) {
@@ -290,10 +308,10 @@ function getTimezoneForCoordinates(latitude, longitude) {
     //console.log(sevenDayForecast.daysOfWeek);
     //console.log(sevenDayForecast.datesFull);
     // Display the currnet day on the page
-    $(".today").html(sevenDayForecast.daysOfWeekFULL[0]);
+    $(".today").html(`${sevenDayForecast.daysOfWeekFULL[0]} ${sevenDayForecast.dates[0]}`);
     
     for (let i = 0; i < 7; i++) {
-      $(`#day${i+1}`).text(sevenDayForecast.daysOfWeek[i]);
+      $(`#day${i+1}`).html(`<span id="theDay${i+1}">${sevenDayForecast.daysOfWeek[i]}</span> <span id="theDate${i+1}">${sevenDayForecast.dates[i]}</span>`);
     }
 
   });
@@ -315,13 +333,23 @@ function updateHourlyData(hourlyTM) {
   currentIMG(mostFrequentWeatherCode);
 
   if (hourlyTM === 0) {
+    if ($("span#convrt").hasClass("fahrenheit") == true){
+      $("#precipValue").html(currentPrecipitation);
+      $("#humValue").html(currentHumidity);
+      $("#maxValue").html(convertToFahrenheit(currentMaxTemp));
+      $("#minValue").html(convertToFahrenheit(currentMinTemp));
+      $("#windValue").html(kmToMiles(currentWindSpeed));
+      $("#currntValue").html(convertToFahrenheit(current_Temp));
+
+    } else {    
+      $("#precipValue").html(currentPrecipitation);
+      $("#humValue").html(currentHumidity);
+      $("#maxValue").html(currentMaxTemp);
+      $("#minValue").html(currentMinTemp);
+      $("#windValue").html(currentWindSpeed);
+      $("#currntValue").html(current_Temp);}
     // Display the stored current weather data
-    $("#precipValue").html(currentPrecipitation);
-    $("#humValue").html(currentHumidity);
-    $("#maxValue").html(currentMaxTemp);
-    $("#minValue").html(currentMinTemp);
-    $("#windValue").html(currentWindSpeed);
-    $("#currntValue").html(current_Temp);
+
     console.log(`this is the current wind speed ${currentWindSpeed}`)
     }  else {
     for (let i = 0; i < 23; i++) {
@@ -334,26 +362,44 @@ function updateHourlyData(hourlyTM) {
     var precipAvg = Math.round(precipSum / 24);
     var tempAvg = Math.round(tempSum / 24);
     var humidAvg = Math.round(humidSum / 24);
-    
-    $("#windValue").html(windAvg);
-    $("#precipValue").html(precipAvg);
-    $("#currntValue").html(tempAvg);
-    $("#humValue").html(humidAvg);
-    $("#maxValue").html(selectedHigh);
-    $("#minValue").html(selectedLow);
+    if ($("span#convrt").hasClass("fahrenheit") == true){    
+      $("#windValue").html(kmToMiles(windAvg));
+      $("#precipValue").html(precipAvg);
+      $("#currntValue").html(convertToFahrenheit(tempAvg));
+      $("#humValue").html(humidAvg);
+      $("#maxValue").html(selectedHigh);
+      $("#minValue").html(selectedLow);
+    } else {
+      $("#windValue").html(windAvg);
+      $("#precipValue").html(precipAvg);
+      $("#currntValue").html(tempAvg);
+      $("#humValue").html(humidAvg);
+      $("#maxValue").html(selectedHigh);
+      $("#minValue").html(selectedLow);
     console.log(`this is the avg wind speed ${windAvg}`)
+    }
   }
   
   // Displaying the hourly weather data in the hourlytab --> hourlycontent --> first12 and second12 remeber your hour classes start at 1
-  for (let i = 0; i <= 23; i++) {
-    $(`#tempHourlyValue${i+1}`).html(dailyTemperatureData[hourlyTM][i]);
-    //$(`#hour${i+1}code`).html(dailyWeatherCodeData[hourlyTM][i]);
-    $(`#percipHorulyValue${i+1}`).html(dailyPrecipitationData[hourlyTM][i]);
-    $(`#windHorulyValue${i+1}`).html(dailyWindSpeedData[hourlyTM][i]);
-    hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
-    $(`#hourlySpeedEmblm${i+1}`).html("km/h")
+  if (($("span#convrt").hasClass("fahrenheit") == true)){
+    for (let i = 0; i <= 23; i++) {
+      $(`#tempHourlyValue${i+1}`).html(convertToFahrenheit(dailyTemperatureData[hourlyTM][i]));
+      //$(`#hour${i+1}code`).html(dailyWeatherCodeData[hourlyTM][i]);
+      $(`#percipHorulyValue${i+1}`).html(dailyPrecipitationData[hourlyTM][i]);
+      $(`#windHorulyValue${i+1}`).html(kmToMiles(dailyWindSpeedData[hourlyTM][i]));
+      hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
+      $(`#hourlySpeedEmblm${i+1}`).html("mph")
+    }
+  } else {
+    for (let i = 0; i <= 23; i++) {
+      $(`#tempHourlyValue${i+1}`).html(dailyTemperatureData[hourlyTM][i]);
+      //$(`#hour${i+1}code`).html(dailyWeatherCodeData[hourlyTM][i]);
+      $(`#percipHorulyValue${i+1}`).html(dailyPrecipitationData[hourlyTM][i]);
+      $(`#windHorulyValue${i+1}`).html(dailyWindSpeedData[hourlyTM][i]);
+      hourlyIMG(dailyWeatherCodeData[hourlyTM][i], i);
+      $(`#hourlySpeedEmblm${i+1}`).html("km/h")
+    }
   }
-
 }
 
 // Function to get the weather data for the given coordinates
@@ -539,7 +585,7 @@ $(document).ready(()=>{
 
   $(".sevenDayContent").children().click(function() {
     var clickedIndex = $(this).index();
-    var clickedDay = $(this).find(`#day${clickedIndex+1}`).text();
+    var clickedDay = $(this).find(`#theDay${clickedIndex+1}`).text();
     //alert("Clicked element index: " + clickedIndex);
     //console.log($(this).find(`#day${clickedIndex+1}`).text());
     for (let i = 0; i < 7; i++) {
@@ -552,8 +598,10 @@ $(document).ready(()=>{
         $(`.day${i+1}`).removeClass("dayActive");
       }
     }
+    
+    var theDATE = $(`#theDate${clickedIndex+1}`).text();
     updateHourlyData(clickedIndex);
-    $(".today").html(whatisToday(clickedDay.toUpperCase()));
+    $(".today").html(`${whatisToday(clickedDay.toUpperCase())} ${theDATE}`);
   })
 
   //This is for the hourly weather data
