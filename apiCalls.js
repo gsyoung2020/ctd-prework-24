@@ -126,21 +126,21 @@ function hourlyIMG(weatherCode, index) {
     if (key == weatherCode) {
       $(`#hour${index+1}code`).html(value);
       if (key == 0) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}" src="assets/sun.svg" alt="clear-sky">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}" src="assets/sun.svg" alt="clear-sky">`);
       } else if (key == 1 || key == 2 || key == 3) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/cloudy.svg" alt="cloudy">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/cloudy.svg" alt="cloudy">`);
       } else if (key == 45 || key == 48) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/fog.svg" alt="Fog">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/fog.svg" alt="Fog">`);
       } else if (key == 51 || key == 53 || key == 55 || key == 56 || key == 57) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/drizzle.svg" alt="drizzle">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/drizzle.svg" alt="drizzle">`);
       } else if (key == 61 || key == 63 || key == 65 || key == 66 || key == 67) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/rain.svg" alt="rain">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/rain.svg" alt="rain">`);
       } else if (key == 71 || key == 73 || key == 75 || key == 77) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/snowy.svg" alt="snowy">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/snowy.svg" alt="snowy">`);
       } else if (key == 80 || key == 81 || key == 82 || key == 85 || key == 86) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/rainshowers.svg" alt="rain showers">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/rainshowers.svg" alt="rain showers">`);
       } else if (key == 95 || key == 96 || key == 99) {
-        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="dailyIcon${i+1}"  src="assets/thunderstorm.svg" alt="thunderstorm">`);
+        $(`#wIconH${index+1}`).html(`<img class="weatherICON" id="hourlyIcon${i+1}"  src="assets/thunderstorm.svg" alt="thunderstorm">`);
       }
     }
   }
