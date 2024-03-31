@@ -681,7 +681,7 @@ $(document).ready(()=>{
       updateSlider("fahrenheit");
       convertToFahrenheitBTN();
     } else {
-      alert("Already in Fahrenheit");
+      console.log("Already in Fahrenheit");
     }
   });
 
@@ -692,7 +692,7 @@ $(document).ready(()=>{
       updateSlider("celsius")
       convertToCelsiusBTN();
       } else {
-        alert("Already in Celsius");
+        console.log("Already in Celsius");
       }
   });
   $(".switch input[type='checkbox']").click(function() {
@@ -707,7 +707,7 @@ $(document).ready(()=>{
 
   //This is for the location button to get the location of the user
   $('#globe').click(()=>{
-    alert("Please enable location services to get the weather of your location");
+    console.log("Please enable location services to get the weather of your location");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
       const latitude = position.coords.latitude;

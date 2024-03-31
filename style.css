@@ -320,7 +320,22 @@ align-items: self-end;
   transform: rotate(25deg);
 }
 
+.btn{
+  width: 50%;
+  position: sticky;
+  transform: translateX(175px);
+}
 
+#prev, #next {
+  background-color: #030640;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 50px;
+  margin: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
 
 
@@ -440,6 +455,12 @@ align-items: self-end;
     grid-template-columns:  20px 35px 25px 45px 35px 40px;
     grid-template-rows: 75px;
     gap: 28px;
+  }
+
+  .btn{
+    width: 100%;
+    position: sticky;
+    transform: translateX(15px);
   }
 
 }

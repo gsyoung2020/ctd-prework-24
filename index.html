@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.8, maximum-scale=1, viewport-fit=cover">
     <title>Weather App</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,7 @@
     <img src="assets/flower.svg" alt="Weather Icon" id="topBarLOGO">
     <div id="search-box">
       <div class="locationiq-autocomplete-control locationiq-bounds locationiq-control locationiq-autocomplete-expanded" id="search-box-area">
-        <input class="locationiq-autocomplete-input ui-autocomplete-input" id="search-box-input" title="Search" placeholder="Search for an address...">
+        <input class="locationiq-autocomplete-input ui-autocomplete-input" id="search-box-input" title="Search" placeholder="Input New Location...">
         <a class="locationiq-autocomplete-search-icon"></a>
         <a class="locationiq-reset-control" id="reset-autocomplete" title="Reset">x</a> 
       </div>
@@ -113,8 +113,10 @@
       </div>
       <div id="second12" style="display: none">
       </div>
+      <div class="btn">
       <button id="prev" type="button">Prev</button>
       <button id="next" type="button">Next</button>
+      </div>
     </div>
     </div>
   </div>
