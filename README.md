@@ -7,7 +7,7 @@
 3. In terminal: node server.js
 4. once you are on the website use it like any other weather website, type in location, click the globe for current location
 
-### How Dose It Work
+### How Does It Work
 1. **Automatic Location Detection:** Upon loading, the site immediately identifies your current location to display the current local weather. This is achieved through a two-step process:
 - An IP address is obtained using the ipify API.
 - This IP address is then used with the ip-api to retrieve the user’s geographical location, including longitude and latitude and then sends that to Open-Metro for the weather data.
